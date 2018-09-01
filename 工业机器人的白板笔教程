@@ -1,0 +1,724 @@
+MODULE WhiteBoardModule
+ TASK PERS tooldata tool_BlueMarker:=[TRUE,[[-44.1046,-1.26121,163.67],[1,0,0,0]],[0.5,[25,0,70],[1,0,0,0],0,0,0]];
+ TASK PERS tooldata tool_Eraser:=[TRUE,[[17.4331,1.67545,101.202],[0.597742,-0.344387,0.320198,-0.649288]],[0.5,[25,0,70],[1,0,0,0],0,0,0]];
+ TASK PERS wobjdata wobj_Board:=[FALSE,TRUE,"",[[364.763,435.796,734.722],[0.590044,-0.612757,0.378065,-0.365298]],[[0,0,0],[1,0,0,0]]];
+ CONST robtarget pHome:=[[4.25,6.44,1.87],[0.646867,0.130578,0.176398,-0.73034],[0,0,1,1],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+ VAR num reg_PenDown:=3;
+    VAR num reg_PenUp:=-10;
+ CONST robtarget pEraserHome:=[[3.72,5.36,-7.79],[0.998394,-0.0138665,0.0464018,-0.0293702],[0,0,-1,1],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+ VAR pos pos_Current;
+ VAR pos pos_Saved;
+ VAR num reg_StepLength:=5;
+ PROC Main()
+  WHILE TRUE DO
+   !MoveAbsJ [[0,0,0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]]\NoEOffs, v500, z50, tool_BlueMarker\WObj:=wobj_Board;
+   !DrawGrid;
+   !WaitTime 5;
+   !CleanBoard;
+   WriteSentence 0, 24, 1;
+   WriteSentence 0, 44, 2;
+   WriteSentence 0, 64, 3;
+   WaitTime 5;
+   CleanBoard;
+   DrawNumber 1;
+   WaitTime 5;
+   CleanNumber 1;
+   DrawNumber 2;
+   WaitTime 5;
+   CleanNumber 2;
+   DrawNumber 3;
+   WaitTime 5;
+   CleanNumber 3;
+   DrawNumber 4;
+   WaitTime 5;
+   CleanNumber 4;
+   DrawNumber 5;
+   WaitTime 5;
+   CleanNumber 5;
+   DrawNumber 6;
+   WaitTime 5;
+   CleanNumber 6;
+   DrawNumber 7;
+   WaitTime 5;
+   CleanNumber 7;
+   DrawNumber 8;
+   WaitTime 5;
+   CleanNumber 8;
+   DrawNumber 9;
+   WaitTime 5;
+   CleanNumber 9;
+  ENDWHILE
+ ENDPROC
+ PROC DrawGrid()
+  VAR num reg_X:=0;
+  VAR num reg_Y:=0;
+  ConfL\On;
+  SingArea\Wrist;
+  FOR reg_X FROM 0 TO 9 DO
+   MoveJ Offs(pHome,50 * reg_X,0,-100), v100, z50, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * reg_X,0,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   FOR reg_Y FROM 0 TO 6 DO
+    MoveL Offs(pHome,50 * reg_X,50 * reg_Y,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    MoveL Offs(pHome,50 * reg_X+50,50 * reg_Y,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    MoveL Offs(pHome,50 * reg_X+50,50 * reg_Y+50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    MoveL Offs(pHome,50 * reg_X,50 * reg_Y+50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    MoveL Offs(pHome,50 * reg_X,50 * reg_Y,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   ENDFOR
+   MoveJ Offs(pHome,50 * reg_X,50 * 6,-100), v100, fine, tool_BlueMarker\WObj:=wobj_Board;
+  ENDFOR
+  SingArea\Off;
+ ENDPROC
+ PROC CleanBoard()
+  VAR num reg_Y:=0;
+  SingArea\Wrist;
+  MoveJ Offs(pHome,0,0,-100), v100, z50, tool_BlueMarker\WObj:=wobj_Board;
+  MoveJ Offs(pEraserHome,0,0,-100), v100, z50, tool_Eraser\WObj:=wobj_Board;
+  MoveL Offs(pEraserHome,0,0,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+  WaitTime 1;
+  FOR reg_Y FROM 0 TO 8 DO
+   MoveL Offs(pEraserHome,500,reg_Y * 40,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,500,(reg_Y+0.6) * 40,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,0,(reg_Y+0.6) * 40,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,0,(reg_Y+1.2) * 40,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,500,(reg_Y+1.2) * 40,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  ENDFOR
+  MoveJ Offs(pEraserHome,500,(reg_Y+1.2) * 40,-100), v100, z50, tool_Eraser\WObj:=wobj_Board;
+  SingArea\Off;
+ ENDPROC
+ PROC DrawNumber(num number)
+  SingArea\Wrist;
+  MoveJ Offs(pHome,50 * 3,0,-100), v100, z50, tool_BlueMarker\WObj:=wobj_Board;
+  TEST number
+  CASE 1:
+   MoveL Offs(pHome,50 * 4,50,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pHome,50*4.7,50*0.7,reg_PenDown), Offs(pHome,50*5,0,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 2:
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pHome,50*5,0,reg_PenDown), Offs(pHome,50*7,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*6.4,50*3.4,reg_PenDown), Offs(pHome,50*5,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*4.3,50*4.3,reg_PenDown), Offs(pHome,50*4,50*5,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50*5,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*5,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*3.6,50*3.6,reg_PenDown), Offs(pHome,50*5,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*6,50*2,reg_PenDown), Offs(pHome,50*5,50,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*4.3,50*1.3,reg_PenDown), Offs(pHome,50*4,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 3:
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pHome,50 * 7,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*2.3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*7,50*4,reg_PenDown), Offs(pHome,50*5,50*6,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*3.6,50*5.4,reg_PenDown), Offs(pHome,50*3,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*5,reg_PenDown), Offs(pHome,50*6,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5.7,50*3.3,reg_PenDown), Offs(pHome,50*5,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 4:
+   MoveL Offs(pHome,50 * 3,50*3,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pHome,50 * 5,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50*3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 5:
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pHome,50 * 7,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*7,50*4,reg_PenDown), Offs(pHome,50*5,50*6,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*3.6,50*5.4,reg_PenDown), Offs(pHome,50*3,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*5,reg_PenDown), Offs(pHome,50*6,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5.7,50*3.3,reg_PenDown), Offs(pHome,50*5,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 6:
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pHome,50*5,0,reg_PenDown), Offs(pHome,50*7,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50,reg_PenDown), Offs(pHome,50*4,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*2.3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*2,reg_PenDown), Offs(pHome,50*7,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*6,reg_PenDown), Offs(pHome,50*3,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 7:
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pHome,50 * 7,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5.6,50*1.6,reg_PenDown), Offs(pHome,50*5,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*6,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*3,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*4.6,50*1.6,reg_PenDown), Offs(pHome,50*6,50,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,50,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 3,0,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 8:
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pHome,50*5,0,reg_PenDown), Offs(pHome,50*7,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*6.7,50*2.7,reg_PenDown), Offs(pHome,50*6,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*6.7,50*3.3,reg_PenDown), Offs(pHome,50*7,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*6,reg_PenDown), Offs(pHome,50*3,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*3.3,50*3.3,reg_PenDown), Offs(pHome,50*4,50*3,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*3.3,50*2.7,reg_PenDown), Offs(pHome,50*3,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+  CASE 9:
+   MoveL Offs(pHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pHome,50*5,0,reg_PenDown), Offs(pHome,50*7,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 7,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*6,reg_PenDown), Offs(pHome,50*3,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*5,reg_PenDown), Offs(pHome,50*6,50*4,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+   MoveL Offs(pHome,50 * 6,50*3.7,reg_PenDown), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+   MoveC Offs(pHome,50*5,50*4,reg_PenDown), Offs(pHome,50*3,50*2,reg_PenDown), v150, z10, tool_BlueMarker\WObj:=wobj_Board;
+  DEFAULT:
+   <SMT>
+  ENDTEST
+  MoveJ Offs(pHome,50 * 4,0,-100), v100, z50, tool_BlueMarker\WObj:=wobj_Board;
+  SingArea\Off;
+ ENDPROC
+ PROC CleanNumber(num number)
+  SingArea\Wrist;
+  MoveJ Offs(pEraserHome,50 * 3,0,-100), v100, z50, tool_Eraser\WObj:=wobj_Board;
+  TEST number
+  CASE 1:
+   MoveL Offs(pEraserHome,50 * 4,50,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pEraserHome,50*4.7,50*0.7,reg_PenDown), Offs(pEraserHome,50*5,0,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 2:
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pEraserHome,50*5,0,reg_PenDown), Offs(pEraserHome,50*7,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*6.4,50*3.4,reg_PenDown), Offs(pEraserHome,50*5,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*4.3,50*4.3,reg_PenDown), Offs(pEraserHome,50*4,50*5,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50*5,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*5,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*3.6,50*3.6,reg_PenDown), Offs(pEraserHome,50*5,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*6,50*2,reg_PenDown), Offs(pEraserHome,50*5,50,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*4.3,50*1.3,reg_PenDown), Offs(pEraserHome,50*4,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 3:
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pEraserHome,50 * 7,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*2.3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*7,50*4,reg_PenDown), Offs(pEraserHome,50*5,50*6,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*3.6,50*5.4,reg_PenDown), Offs(pEraserHome,50*3,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*5,reg_PenDown), Offs(pEraserHome,50*6,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5.7,50*3.3,reg_PenDown), Offs(pEraserHome,50*5,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 4:
+   MoveL Offs(pEraserHome,50 * 3,50*3,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pEraserHome,50 * 5,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50*3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 5:
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pEraserHome,50 * 7,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*7,50*4,reg_PenDown), Offs(pEraserHome,50*5,50*6,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*3.6,50*5.4,reg_PenDown), Offs(pEraserHome,50*3,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*5,reg_PenDown), Offs(pEraserHome,50*6,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5.7,50*3.3,reg_PenDown), Offs(pEraserHome,50*5,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 6:
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pEraserHome,50*5,0,reg_PenDown), Offs(pEraserHome,50*7,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50,reg_PenDown), Offs(pEraserHome,50*4,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*2.3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*2,reg_PenDown), Offs(pEraserHome,50*7,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*6,reg_PenDown), Offs(pEraserHome,50*3,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 7:
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveL Offs(pEraserHome,50 * 7,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5.6,50*1.6,reg_PenDown), Offs(pEraserHome,50*5,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 5,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*6,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*3,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*4.6,50*1.6,reg_PenDown), Offs(pEraserHome,50*6,50,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,50,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 3,0,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+  CASE 8:
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pEraserHome,50*5,0,reg_PenDown), Offs(pEraserHome,50*7,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*6.7,50*2.7,reg_PenDown), Offs(pEraserHome,50*6,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*6.7,50*3.3,reg_PenDown), Offs(pEraserHome,50*7,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*6,reg_PenDown), Offs(pEraserHome,50*3,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*3.3,50*3.3,reg_PenDown), Offs(pEraserHome,50*4,50*3,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*3.3,50*2.7,reg_PenDown), Offs(pEraserHome,50*3,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+  CASE 9:
+   MoveL Offs(pEraserHome,50 * 3,50*2,reg_PenDown), v50, fine, tool_Eraser\WObj:=wobj_Board;
+   WaitTime 1;
+   MoveC Offs(pEraserHome,50*5,0,reg_PenDown), Offs(pEraserHome,50*7,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 7,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*6,reg_PenDown), Offs(pEraserHome,50*3,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 4,50*4,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*5,reg_PenDown), Offs(pEraserHome,50*6,50*4,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+   MoveL Offs(pEraserHome,50 * 6,50*3.7,reg_PenDown), v150, fine, tool_Eraser\WObj:=wobj_Board;
+   MoveC Offs(pEraserHome,50*5,50*4,reg_PenDown), Offs(pEraserHome,50*3,50*2,reg_PenDown), v150, z10, tool_Eraser\WObj:=wobj_Board;
+  DEFAULT:
+   <SMT>
+  ENDTEST
+  MoveJ Offs(pEraserHome,50 * 4,0,-100), v100, z50, tool_Eraser\WObj:=wobj_Board;
+  SingArea\Off;
+ ENDPROC
+ PROC DrawShapeFont(num gbk_code)
+        VAR string shape_string1;
+        VAR string shape_string2;
+        VAR rawbytes bigfont;
+        VAR num shape_index;
+        VAR byte shape_code;
+        VAR bool shape_ignore := FALSE;
+        VAR num shape_para := 0;
+        VAR num shape_length;
+        VAR num shape_angle;
+        VAR bool odd_even := TRUE;
+        VAR string string_byte;
+        VAR byte byte_string;
+        SingArea\Wrist;
+  TEST gbk_code
+  CASE 46536:
+   !Deng(B5C8),33353438?
+   shape_string1 := "00030f05020e08f9f10102b401420260014a3640022001400248013e0229018802401401";
+   shape_string2 := "4c027001d8022d01b00226015c2b270227012606020812000e08eeeb040f00";
+  CASE 50403:
+   !Ni(C4E3),34343633?
+   shape_string1 := "00030f05020e08f9f101022001b4024b01830220014b022301802b023c28016d02a80163";
+   shape_string2 := "022201ac2706020812000e08eeeb040f00";
+  CASE 49332:
+   !Lai(C0B4),34303334?
+   shape_string1 := "00030f05020e08f9f101021401626e026401c80243013e02200132021201a802503401fc";
+   shape_string2 := "06020812000e08eeeb040f00";
+  CASE 52710:
+   !Wan(CDE6)
+   shape_string1 := "00030f05020e08f9f101420254014802500180025c014c38940228013c6b0270f401680228014802";
+   shape_string2 := "2001dc06020812000e08eeeb040f00";
+  CASE 54992:
+   !Zhong(D6D0)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 47610:
+   !Guo(B9FA)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 54781:
+   !Zheng(D5FD)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 54490:
+   !Zai(D4DA)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 45818:
+   !Chan(B2FA)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 51709:
+   !Sheng(C9FD)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 48310:
+   !Ji(BCB6)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 53480:
+   !Xu(D0E8)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 53930:
+   !Yao(D2AA)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 47327:
+   !Gao(B8DF)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 48316:
+   !Ji(BCBC)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 51957:
+   !Shu(CAF5)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 45765:
+   !Cai(B2C5)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 51889:
+   !Shi(CAB1)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 46330:
+   !Dai(B4FA)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 55263:
+   !Zou(D7DF)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 55228:
+   !Zhun(D7BC)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 45496:
+   !Bei(B1B8)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 47811:
+   !Hao(BAC3)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 49611:
+   !Le(C1CB)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 49904:
+   !Ma(C2F0)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 45480:
+   !Bao(B1A8)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 46785:
+   !Du(B6C1)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 52440:
+   !Te(CCD8)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 51627:
+   !Se(C9AB)
+   shape_string1 := "";
+   shape_string2 := "";
+  CASE 48054:
+   !Huan(BBB6)
+   shape_string1 := "00030f05020e08f9f10101836448023c013c8d42235402380143022b01602b027c38014e06020812";
+   shape_string2 := "000e08eeeb040f00";
+  CASE 54189:
+   !Yin(D3AD)
+   shape_string1 := "00030f05020e08f9f10102f410014d021c3801307c023a01323e7002482401c4408c2b2702270149";
+   shape_string2 := "02120194202106020812000e08eeeb040f00";
+  CASE 53442:
+   !Xin(D0C2),35303432-?
+   shape_string1 := "00030f05020e08f9f1010221012f84023001680244014d02200143027c0178024c013202";
+   shape_string2 := "20012e02b401680223014f027024012938ac4b026001a40210015806020812000e08eeeb040f00";
+  CASE 51706:
+   !Sheng(C9FA)
+   shape_string1 := "00030f05020e08f9f10102a40143022b01a0025c180188028301fc026801c006020812000e08eeeb";
+   shape_string2 := "040f00";
+  CASE 46525:
+   !Dao(B5BD)
+   shape_string1 := "00030f05020e08f9f10102b014012ff402689c0168023044018c02482c0181022001840258013e16";
+   shape_string2 := "78520230018806020812000e08eeeb040f00";
+  CASE 48122:
+   !Ji(BBFA)
+   shape_string1 := "00030f05020e08f9f101023401634d02285c01f4024c38016002bc180143a440ec20340602081200";
+   shape_string2 := "0e08eeeb040f00";
+  CASE 53429:
+   !Xie(D0B5),35303335-?
+   shape_string1 := "00030f05020e08f9f101023001f4024d0158028c01634d02240140026c0183026c013c65";
+   shape_string2 := "940210012e021c0188022d018c2b023001a406020812000e08eeeb040f00";
+  CASE 53671:
+   !Xue(D1A7),35313237-?
+   shape_string1 := "00030f05020e08f9f10102d06401d802405c012f235416417802900123c82b0290240132";
+   shape_string2 := "02582c012602282c012606020812000e08eeeb040f00";
+  CASE 54458:
+   !Yuan(D4BA)
+   shape_string1 := "00030f05020e08f9f101f4404b207c2a2602504c0163140220017c30440234018802703401680218";
+   shape_string2 := "140123702b022824012606020812000e08eeeb040f00";
+  CASE 54982:
+   !Zhi(D6C6),35363436-?
+   shape_string1 := "00030f05020e08f9f10102b40143022001fc0223012f74687c02c40160023c7801800222";
+   shape_string2 := "017c024c10012ff406020812000e08eeeb040f00";
+  CASE 54508:
+   !Zao(D4EC)
+   shape_string1 := "00030f05020e08f9f101013284380244013e022f01430220016c0245180160024c100188022d0160";
+   shape_string2 := "5c6854024c38013e7006020812000e08eeeb040f00";
+  CASE 54251:
+   !Yu(D3EB)
+   shape_string1 := "00030f05020e08f9f1010220d401b002386c01a902901c012f4354b86406020812000e08eeeb040f";
+   shape_string2 := "00";
+  CASE 55252:
+   !Zi(D7D4),35373534-?
+   shape_string1 := "00030f05020e08f9f101021001b0c4b8cc024401b0024401b80244016106020812000e08";
+   shape_string2 := "eeeb040f00";
+  CASE 46767:
+   !Dong(B6AF)
+   shape_string1 := "00030f05020e08f9f10102a40170027c0136022e0169148302220170ac2b27021c680142b4022801";
+   shape_string2 := "5806020812000e08eeeb040f00";
+  CASE 48047:
+   !Hua(BBAF)
+   shape_string1 := "00030f05020e08f9f1010260640172029c014c58f40268fc01b402284c018306020812000e08eeeb";
+   shape_string2 := "040f00";
+  CASE 55208:
+   !Zhuan(D7A8),35373238-?
+   shape_string1 := "00030f05020e08f9f101028001472f62988302686c01c002184401a806020812000e08ee";
+   shape_string2 := "eb040f00";
+  CASE 53941:
+   !Ye(D2B5),35323335-?
+   shape_string1 := "00030f05020e08f9f101024001f40248fc01400248d4010803f902606c01f402109c0108";
+   shape_string2 := "030702dc01d806020812000e08eeeb040f00";
+  CASE 53168:
+   !Xi(CFB0)
+   shape_string1 := "00030f05020e08f9f101023401a10228140167023401a0bc4b2706020812000e08eeeb040f00";
+   shape_string2 := "";
+  CASE 47524:
+   !Gong(B9A4),33393234-?
+   shape_string1 := "00030f05020e08f9f10102d001d802500143b4025001b806020812000e08eeeb040f00";
+   shape_string2 := "";
+  CASE 50935:
+   !Qi(C6F7),34363737-?
+   shape_string1 := "00030f05020e08f9f10102100154405c4802700154405c4802505401670222012f022f01";
+   shape_string2 := "d8023c01612302270144484c4002300144404c4806020812000e08eeeb040f00";
+  CASE 51403:
+   !Ren(C8CB)
+   shape_string1 := "00030f05020e08f9f10101228354025c018d2e06020812000e08eeeb040f00";
+   shape_string2 := "";
+  CASE 54182:
+   !Ying(D3A6),35333236-?
+   shape_string1 := "00030f05020e08f9f1010260440165023014016d022c018302bc01a802380123c4c00258";
+   shape_string2 := "012706020812000e08eeeb040f00";
+  CASE 54211:
+   !Yong(D3C3),35333433-?
+   shape_string1 := "00030f05020e08f9f1010270f401dc02605401c8024401c00238ac012f23d4c8dc2b0602";
+   shape_string2 := "0812000e08eeeb040f00";
+  CASE 49102:
+   !Ke(BFCE)
+   shape_string1 := "00030f05020e08f9f101028001f4406c886480023c01880218013602fc0132028401380220019c02";
+   shape_string2 := "b001565a025401a006020812000e08eeeb040f00";
+  CASE 46028:
+   !Cheng(B3CC)
+   shape_string1 := "00030f05020e08f9f101023001e402210149022c0140022a012e0226016b023e2001800248018402";
+   shape_string2 := "38240144604c68022c0160024c016806020812000e08eeeb040f00";
+  DEFAULT:
+   shape_string1 := "00";
+   shape_string2 := "";
+  ENDTEST
+  ClearRawBytes bigfont;
+        FOR shape_index FROM 1 TO StrLen(shape_string1) DO
+            IF odd_even THEN
+                string_byte := StrPart(shape_string1,shape_index,2);
+                byte_string := StrToByte(string_byte\Hex);
+                PackRawBytes byte_string, bigfont, (RawBytesLen(bigfont)+1)\Hex1;
+                odd_even := FALSE;
+            ELSE
+                odd_even := TRUE;
+            ENDIF
+        ENDFOR
+  IF StrLen(shape_string2) > 0 THEN
+   FOR shape_index FROM 1 TO StrLen(shape_string2) DO
+                IF odd_even THEN
+                    PackRawBytes StrToByte(StrPart(shape_string2,shape_index,2)\Hex), bigfont, (RawBytesLen(bigfont)+1)\Hex1;
+                    odd_even := FALSE;
+                ELSE
+                    odd_even := TRUE;
+                ENDIF
+            ENDFOR
+  ENDIF
+  FOR shape_index FROM 1 TO RawBytesLen(bigfont) DO
+   UnpackRawBytes bigfont, shape_index, shape_code\Hex1;
+   IF shape_ignore THEN
+    IF shape_para > 0 THEN
+     shape_para := shape_para - 1;
+    ELSE
+     shape_ignore := FALSE;
+    ENDIF
+   ELSE
+    TEST shape_code
+    CASE 0:
+     MoveJ Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,-100), v100, z50, tool_BlueMarker\WObj:=wobj_Board;
+    CASE 1:
+     pos_Current.z := reg_PenDown;
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,pos_Current.z), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+     WaitTime 1;
+    CASE 2:
+     pos_Current.z := reg_PenUp;
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,pos_Current.z), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+    CASE 3:
+     shape_ignore := TRUE;
+    CASE 4:
+     shape_ignore := TRUE;
+    CASE 5:
+     pos_Saved := pos_Current;
+    CASE 6:
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,reg_PenUp), v50, fine, tool_BlueMarker\WObj:=wobj_Board;
+     pos_Current := pos_Saved;
+    CASE 7:
+     !<SMT>
+    CASE 8:
+     UnpackRawBytes bigfont, shape_index+1, shape_code\Hex1;
+     IF shape_code >= 80 THEN
+      pos_Current.x := pos_Current.x - (256 - shape_code)/2;
+     ELSE
+      pos_Current.x := pos_Current.x + shape_code/2;
+     ENDIF
+     UnpackRawBytes bigfont, shape_index+2, shape_code\Hex1;
+     IF shape_code >= 80 THEN
+      pos_Current.y := pos_Current.y - (256 - shape_code)/2;
+     ELSE
+      pos_Current.y := pos_Current.y + shape_code/2;
+     ENDIF
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,pos_Current.z), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+     shape_ignore := TRUE;
+     shape_para := 1;
+    CASE 9:
+     !<SMT>
+    CASE 10:
+     !Not arc?
+     pos_Current.x := pos_Current.x + 1;
+     pos_Current.y := pos_Current.y;
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,pos_Current.z), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    CASE 11:
+     !<SMT>
+    CASE 12:
+     !<SMT>
+    CASE 13:
+     !<SMT>
+    CASE 14:
+     shape_ignore := TRUE;
+     shape_para := 2;
+    DEFAULT:
+     shape_angle := BitAnd(shape_code, 15);
+     shape_length := BitRSh(shape_code, 4);
+     IF shape_angle < 2 THEN
+      pos_Current.x := pos_Current.x + shape_length;
+      pos_Current.y := pos_Current.y - shape_length*Tan(22.5*shape_angle);
+     ELSEIF shape_angle < 6 THEN
+      pos_Current.x := pos_Current.x + shape_length*Tan(22.5*(4-shape_angle));
+      pos_Current.y := pos_Current.y - shape_length;
+     ELSEIF shape_angle < 10 THEN
+      pos_Current.x := pos_Current.x - shape_length;
+      pos_Current.y := pos_Current.y - shape_length*Tan(22.5*(8-shape_angle));
+     ELSEIF shape_angle < 14 THEN
+      pos_Current.x := pos_Current.x - shape_length*Tan(22.5*(12-shape_angle));
+      pos_Current.y := pos_Current.y + shape_length;
+     ELSE
+      pos_Current.x := pos_Current.x + shape_length;
+      pos_Current.y := pos_Current.y + shape_length*Tan(22.5*(16-shape_angle));
+     ENDIF
+     MoveL Offs(pHome,reg_StepLength * pos_Current.x,reg_StepLength * pos_Current.y,pos_Current.z), v150, fine, tool_BlueMarker\WObj:=wobj_Board;
+    ENDTEST
+   ENDIF
+  ENDFOR
+        SingArea\Off;
+ ENDPROC
+ PROC WriteSentence(num x,num y,num index)
+        VAR string sentence;
+        VAR bool odd_even := TRUE;
+        VAR num word_index;
+        VAR string string_byte_h;
+        VAR string string_byte_l;
+        VAR byte byte_string_h;
+        VAR byte byte_string_l;
+        VAR num num_string;
+  pos_Current.x := x;
+  pos_Current.y := y;
+  TEST index
+  CASE 1:
+   !Huan Yin Ji Xie Xue Yuan Xin Sheng
+   sentence := "BBB6D3ADBBFAD0B5D1A7D4BAD0C2C9FA";
+  CASE 2:
+   !Ji Xie Zhi Zao Yu Zi Dong Hua (Zhuan Ye,D7A8D2B5)
+   sentence := "BBFAD0B5D6C6D4ECD3EBD7D4B6AFBBAF";
+  CASE 3:
+   !Gong Ye Ji Qi Ren (Ying Yong,D3A6D3C3) Deng Ni Lai (Wan,CDE6)
+   sentence := "B9A4D2B5BBFAC6F7C8CBB5C8C4E3C0B4";
+  CASE 4:
+   !Zhong Guo Zheng Zai Chan Ye Sheng Ji
+   sentence := "";
+  CASE 5:
+   !Xu Yao Gao Xin Ji Shu Ren Cai
+   sentence := "";
+  CASE 6:
+   !Ji Qi Ren Zi Dong Hua Shi Di
+   sentence := "";
+  CASE 7:
+   !Zheng Zai Zou Lai
+   sentence := "";
+  CASE 8:
+   !Ni Zhun Bei Hao Le Ma
+   sentence := "";
+  CASE 9:
+   !Huan Yin Bao Du
+   sentence := "";
+  CASE 10:
+   !Ji Qi Ren Zi Dong Hua
+   sentence := "";
+  CASE 11:
+   !Te Se Zhuan Ye
+   sentence := "";
+  ENDTEST
+  FOR word_index FROM 1 TO StrLen(sentence)/4 DO
+   string_byte_h := StrPart(sentence, word_index*4-3, 2);
+   string_byte_l := StrPart(sentence, word_index*4-1, 2);
+   byte_string_h := StrToByte(string_byte_h\Hex);
+   byte_string_l := StrToByte(string_byte_l\Hex);
+   num_string := byte_string_h*256+byte_string_l;
+   DrawShapeFont num_string;
+  ENDFOR
+ ENDPROC
+
+ENDMODULE
